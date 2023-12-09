@@ -53,8 +53,23 @@ class DisconnectedException implements Exception {}
 
 class Client {
   Future<void> connect(Server server) async {
-    // TODO: Implement backoff re-connecting.
-    //       Data from the [server] should be printed to the console.
+    Stream<int> stream = await server.connect();
+
+    StreamSubscription<int> subscription = stream.listen(
+      (int value) {
+        print('Received: $value');
+      },
+      onError: (error) {
+        print('Error occurred: $error');
+      },
+      onDone: () {
+        print('Stream is done');
+      },
+    );
+
+    server._controller?.sink.add(1);
+    server._controller?.sink.add(2);
+    server._controller?.sink.add(3);
   }
 }
 
